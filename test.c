@@ -2,8 +2,45 @@
 #include<stdio.h>
 
 struct fuse_operations fs_oper = {
-		
 
+	.getattr = fs_getattr,
+	.readlink = fs_readlink,
+	.getdir = NULL,
+	.mknod = fs_mknod,
+	.mkdir = fs_mkdir,
+	.unlink = fs_unlink,
+	.rmdir = fs_rmdir,
+	.symlink = fs_symlink,
+	.rename = fs_rename,
+	.link = fs_link,
+	.chmod = fs_chmod,
+	.truncate = fs_truncate,
+	.utime = fs_utime,
+	.open = fs_open,
+	.read = fs_read,
+	.write = fs_write,
+	.statfs = fs_statfs,
+	.flush = fs_flush,
+	.release = fs_release,
+	.fsync = fs_fsync,
+	
+#ifdef HAVE_SYS_XATTR_H
+	.setxattr = fs_setxattr,
+	.getxattr = fs_getxattr,
+	.listxattr = fs_listxattr,
+	.removexattr = fs_removexattr,
+#endif
+
+	.opendir = fs_opendir,
+	.readdir = fs_readdir,
+	.releasedir = fs_releasedir,
+	.fsyncdir = fs_fsyncdir,
+	.init = fs_init,
+	.destroy = fs_destroy,
+	.access = fs_access,
+	.create = fs_create,
+	.ftruncate = fs_ftruncate,
+	.fgetattr = fs_fgetattr
 };
 
 int fs_getattr(const char* path, struct stat *statbuf){
