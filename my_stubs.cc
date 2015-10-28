@@ -1,10 +1,10 @@
 
-// Note: this code is a work−in−progress. This version: 3:15PM PDT
+// Note: this code is a workinprogress. This version: 3:15PM PDT
 // 10/26/15.
 
 // The difference between the functions in my_stubs.cc and those of
 // the Unix system (say those in glibc) is that those in glibc have
-// code in them and mine don’t. I intend that their prototypes and
+// code in them and mine dont. I intend that their prototypes and
 // behavior be identical to those of their glibc counterparts, with
 // three minor exceptions:
 
@@ -18,19 +18,19 @@
 // Recall that openfiles are to files what stringstreams are to strings.
 
 // In our case, we have no need to create an open file from the file
-// in question. Pfeiffer’s bbfs.c immediately stores the integer
-// returned its call to open(...) into the file−handle field of a
+// in question. Pfeiffers bbfs.c immediately stores the integer
+// returned its call to open(...) into the filehandle field of a
 // fuse_file_info struct and later uses it in calls to pread(...) and
 // pwrite(...). So far as I can tell, this modification simply avoids
 // some otherwise wasted code and effort.
 
 
-// Josef Pfeiffer’s bbfs.c includes
+// Josef Pfeiffers bbfs.c includes
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-// #include <fuse.h> I don’t currently have this file and don’t need it.
+// #include <fuse.h> I dont currently have this file and dont need it.
 #include <libgen.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -55,11 +55,10 @@ using namespace std;
 
 // This definition of inode is from http://www.makelinux.net/books/lkd2/ch12lev1
 
-// I’ve commented out all fields whose types are not yet defined.
+// Ive commented out all fields whose types are not yet defined.
 struct inode {
 // struct hlist_node i_hash; /* hash list */
 // struct list_head i_list; /* list of inodes */
-// struct list_head i_dentry; /* list of dentries */
 // struct list_head i_dentry; /* list of dentries */
 unsigned long i_ino; /* inode number */
 //* atomic_t i_count; /* reference counter */
@@ -100,7 +99,7 @@ unsigned char i_sock; /* is this a socket? */
 void *i_security; /* security module */
 // __u32 i_generation; /* inode version number */
 union {
-void *generic_ip; /* filesystem−specific info */
+void *generic_ip; /* filesystemspecific info */
 } u;
 };
 
@@ -108,7 +107,7 @@ void *generic_ip; /* filesystem−specific info */
 map< ino_t, inode > ilist;
 
 
-inline // a simple utility for splitting strings at a find−pattern.
+inline // a simple utility for splitting strings at a findpattern.
 vector<string>
 split(const string s, const string pat ) {
 string c;
@@ -117,7 +116,7 @@ int i = 0;
 for (;;) {
 int t = s.find(pat,i);
 int j = ( t == string::npos ) ? s.size() : t;
-string c = s.substr(i,j−i);
+string c = s.substr(i,ji);
 v.push_back(c);
 i = j+pat.size();
 if ( t == string::npos ) return v;
@@ -138,13 +137,13 @@ if ( t == string::npos ) return v;
 
 
 int ok = 0;
-int err = −1;
+int err = 1;
 
 // called at line #95 of bbfs.c
 // for details see: http://manpages.ubuntu.com/manpages/hardy/man2/stat.2.html
 int my_lstat( const char* path, struct stat *statbuf ) {
 // ino_t fh = find_inode(path);
-// collect attributes from ilist[fh] and load them into struct stat.
+// collect attributes from ilist[fh] and load them into struct stat
 return err;
 }
 
@@ -170,7 +169,7 @@ int my_unlink( const char *path ) {
 return err;
 }
 
-// called at line #220 of bbfs.c
+// called at line #0 of bbfs.c
 int my_rmdir( const char *path ) {
 return err;
 }
@@ -203,7 +202,8 @@ return err;
 // called at line #331 of bbfs.c
 int my_truncate(const char *path, off_t newsize) {
 return err;
-} 
+}
+
 // called at line #349 of bbfs.c
 int my_utime(const char *path, struct utimbuf *ubuf) {
 return err;
@@ -218,7 +218,7 @@ int my_open( const char *path, int flags ) {
 // directory whose handle you currently have. Use a linear search
 // that consists of successive calls to readdir() to find the
 // corresponding directory entry, which has type struct dirent.
-// Return its d_fileno, unless there’s an error and then return −1.
+// Return its d_fileno, unless theres an error and then return 1.
 return err;
 }
 
@@ -262,7 +262,7 @@ return err;
 int my_lgetxattr( const char *fpath, const char *name, char *value, size_t size,
 flags ) {
 return err;
-} 
+}
 
 // called at line #613 of bbfs.c
 int my_llistxattr( const char *path, char *list, size_t size ) {
@@ -272,24 +272,22 @@ return err;
 // called at line #634 of bbfs.c
 int my_lremovexattr( const char *path, const char *name ) {
 return err;
-}
-
-
+} 
 // In the next three functions, we need to create a my_DIR* from a file
 // handle, i.e., an (ino_t) fh. So, how to do that?
 
-// It doesn’t say this anywhere that I can find, but a my_DIR has to be
+// It doesnt say this anywhere that I can find, but a my_DIR has to be
 // similar to an open file. However, rather than creating a stream of
 // bytes (chars) from the file, it creates a stream of directory
 // entries. The key difference is how much you increment the offset
 // counter each time you move to the next item.
 
-// Note that at line #742 of bbfs.c, Professor Pfeiffer converts a
+// Note that at line #7 of bbfs.c, Professor Pfeiffer converts a
 // file handle into a my_DIR via "(uintptr_t) fh." But, his file handles
 // are indices of byte streams, while our are the addresses of inodes.
 
 // I recommend that we simply maintain the counter as an
-// directory−entry index and increment it by one each time. Then
+// directoryentry index and increment it by one each time. Then
 // multiply it by the size of a directory entry to get the offset of
 // the directory entry that it refers to within the directory. To get
 // the address of that directory entry, we simply add the address of
@@ -305,7 +303,7 @@ return err;
 // return err;
 // }
 
-// // called at line #742 of bbfs.c
+// // called at line #7 of bbfs.c
 // int my_closedir( my_DIR* dp ) {
 // return err;
 // }
@@ -350,20 +348,19 @@ typedef char block[4096];
 block* blocks[15];
 
 MY_DIR* fhopendir( ino_t fh ) {
-// if ( fh is not the handle of a directory ) return not−a−directory error;
+// if ( fh is not the handle of a directory ) return notadirectory error;
 MY_DIR * tmp = new MY_DIR;
-tmp−>fh = fh;
+tmp>fh = fh;
 }
-
-
 // called at lines #707 and #726 of bbfs.c
 dirent* my_readdir( MY_DIR* dirp ) {
-off_t tmp = (dirp−>offset)−>d_reclen;
-dirp−>offset += tmp;
-return ( dirp−>offset < dirp−>max_offset) ? dirp−>offset : 0 ;
+off_t tmp = (dirp>offset)>d_reclen;
+dirp>offset += tmp;
+return ( dirp>offset < dirp>max_offset) ? dirp>offset : 0 ;
 }
 
-// called at line #742 of bbfs.c
+
+// called at line #7 of bbfs.c
 int my_closedir( MY_DIR* dirp ) {
 delete dirp;
 }
@@ -375,19 +372,19 @@ ino_t lookup( string name, ino_t fh ) {
 MY_DIR* dirp = fhopendir( fh ); // fhopendir checks if fh is handle of a dir.
 if ( ! dirp ) return err; // cannot_open_error
 while ( dirent* dp = my_readdir(dirp) ) {
-string s = dp−>d_name; // converts C string to C++ string
+string s = dp>d_name; // converts C string to C++ string
 if ( s == name ) {
 my_closedir(dirp);
-if ( dp−>d_type != DT_REG && dp−>d_type != DT_DIR ) {
-return err; // wrong−file−type error
+if ( dp>d_type != DT_REG && dp>d_type != DT_DIR ) {
+return err; // wrongfiletype error
 // later we may add more types
 } else {
-return dp−>d_fileno;
+return dp>d_fileno;
 }
 }
 }
 my_closedir(dirp); // close MY_DIR asap, to reset internal data
-return err; // name−not−found
+return err; // namenotfound
 }
 
 
@@ -410,7 +407,7 @@ MY_DIR * my_opendir( char fullpath[PATH_MAX] ) {
 return fhopendir( find_inode( fullpath ) );
 }
 
-// ===================== a crude c++ approach ====================
+// ===================== a crude c++ approach ======================
 
 class file {
 public:
@@ -424,7 +421,6 @@ string content;
 class openfile : regfile {
 stringstream(content);
 };
-
 class directory : file {
 public:
 map<string,file> themap; // a balanced binary tree.
@@ -434,7 +430,7 @@ map<string,file> themap; // a balanced binary tree.
 template< typename T1, typename T2>
 string pickle(map<T1,T2> m) {
 typename map<T1,T2>::iterator it;
-string s
+string s;
 stringstream ss(s);
 for ( it = m.begin(); it != m.end(); ++it ) {
 // This requires some kind of separation/terminaton symbol at the end of eac
@@ -442,5 +438,7 @@ for ( it = m.begin(); it != m.end(); ++it ) {
 ss << it.first;
 ss << it.second;
 }
-} 
+}
+
+
 
