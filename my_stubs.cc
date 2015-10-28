@@ -355,7 +355,7 @@ tmp->fh = fh;
 dirent* my_readdir( MY_DIR* dirp ) {
 off_t tmp = (dirp->offset)->d_reclen;
 dirp->offset += tmp;
-return ( dirp->offset < dirp>max_offset) ? dirp->offset : 0 ;
+return ( dirp->offset < dirp->max_offset) ? dirp->offset : 0 ;
 }
 
 
