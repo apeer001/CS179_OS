@@ -116,7 +116,7 @@ int i = 0;
 for (;;) {
 int t = s.find(pat,i);
 int j = ( t == string::npos ) ? s.size() : t;
-string c = s.substr(i,ji);
+string c = s.substr(i,j);
 v.push_back(c);
 i = j+pat.size();
 if ( t == string::npos ) return v;
@@ -259,8 +259,7 @@ return err;
 }
 
 // called at line #592 of bbfs.c
-int my_lgetxattr( const char *fpath, const char *name, char *value, size_t size,
-flags ) {
+int my_lgetxattr( const char *fpath, const char *name, char *value, size_t size, int flags ) {
 return err;
 }
 
@@ -350,13 +349,13 @@ block* blocks[15];
 MY_DIR* fhopendir( ino_t fh ) {
 // if ( fh is not the handle of a directory ) return notadirectory error;
 MY_DIR * tmp = new MY_DIR;
-tmp>fh = fh;
+tmp->fh = fh;
 }
 // called at lines #707 and #726 of bbfs.c
 dirent* my_readdir( MY_DIR* dirp ) {
-off_t tmp = (dirp>offset)>d_reclen;
-dirp>offset += tmp;
-return ( dirp>offset < dirp>max_offset) ? dirp>offset : 0 ;
+off_t tmp = (dirp->offset)->d_reclen;
+dirp->offset += tmp;
+return ( dirp->offset < dirp>max_offset) ? dirp->offset : 0 ;
 }
 
 
@@ -372,14 +371,14 @@ ino_t lookup( string name, ino_t fh ) {
 MY_DIR* dirp = fhopendir( fh ); // fhopendir checks if fh is handle of a dir.
 if ( ! dirp ) return err; // cannot_open_error
 while ( dirent* dp = my_readdir(dirp) ) {
-string s = dp>d_name; // converts C string to C++ string
+string s = dp->d_name; // converts C string to C++ string
 if ( s == name ) {
 my_closedir(dirp);
-if ( dp>d_type != DT_REG && dp>d_type != DT_DIR ) {
+if ( dp->d_type != DT_REG && dp->d_type != DT_DIR ) {
 return err; // wrongfiletype error
 // later we may add more types
 } else {
-return dp>d_fileno;
+return dp->d_fileno;
 }
 }
 }
